@@ -52,3 +52,16 @@ output/*.md
 
 # Model cache (sentence transformers)
 .cache/
+
+# Environment variables (secrets)
+.env
+.env.local
+*.env
+
+# HuggingFace tokens
+huggingface_token
+*.token
+
+# Credentials
+credentials.json
+secrets.yaml
