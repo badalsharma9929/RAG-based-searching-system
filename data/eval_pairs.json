@@ -1,0 +1,237 @@
+[
+  {
+    "id": "eval_1",
+    "query": "What is Tokenization and how does it work?",
+    "relevant_docs": [
+      "doc_14",
+      "doc_9"
+    ],
+    "concept": "Tokenization",
+    "n_relevant": 2
+  },
+  {
+    "id": "eval_2",
+    "query": "What are the best practices for Chunking Strategies?",
+    "relevant_docs": [
+      "doc_22"
+    ],
+    "concept": "Chunking Strategies",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_3",
+    "query": "How does Deep Learning differ from traditional approaches?",
+    "relevant_docs": [
+      "doc_55"
+    ],
+    "concept": "Deep Learning",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_4",
+    "query": "What are the best practices for Text Generation?",
+    "relevant_docs": [
+      "doc_48"
+    ],
+    "concept": "Text Generation",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_5",
+    "query": "What is Tokenization and how does it work?",
+    "relevant_docs": [
+      "doc_9"
+    ],
+    "concept": "Tokenization",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_6",
+    "query": "How do I implement Chunking Strategies?",
+    "relevant_docs": [
+      "doc_22"
+    ],
+    "concept": "Chunking Strategies",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_7",
+    "query": "What are the best practices for Sentiment Analysis?",
+    "relevant_docs": [
+      "doc_53"
+    ],
+    "concept": "Sentiment Analysis",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_8",
+    "query": "How does Transfer Learning differ from traditional approaches?",
+    "relevant_docs": [
+      "doc_20"
+    ],
+    "concept": "Transfer Learning",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_9",
+    "query": "How does HNSW Indexing integrate with other systems?",
+    "relevant_docs": [
+      "doc_39",
+      "doc_27"
+    ],
+    "concept": "HNSW Indexing",
+    "n_relevant": 2
+  },
+  {
+    "id": "eval_10",
+    "query": "How do I implement Bi-Encoder?",
+    "relevant_docs": [
+      "doc_65"
+    ],
+    "concept": "Bi-Encoder",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_11",
+    "query": "What is Word Embeddings and how does it work?",
+    "relevant_docs": [
+      "doc_68"
+    ],
+    "concept": "Word Embeddings",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_12",
+    "query": "What is Gradient Descent and how does it work?",
+    "relevant_docs": [
+      "doc_24",
+      "doc_4",
+      "doc_51"
+    ],
+    "concept": "Gradient Descent",
+    "n_relevant": 3
+  },
+  {
+    "id": "eval_13",
+    "query": "Explain Vector Databases with examples",
+    "relevant_docs": [
+      "doc_67"
+    ],
+    "concept": "Vector Databases",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_14",
+    "query": "How to optimize Attention Mechanisms for better performance?",
+    "relevant_docs": [
+      "doc_56"
+    ],
+    "concept": "Attention Mechanisms",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_15",
+    "query": "How does Vertex AI integrate with other systems?",
+    "relevant_docs": [
+      "doc_10"
+    ],
+    "concept": "Vertex AI",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_16",
+    "query": "How does MLflow differ from traditional approaches?",
+    "relevant_docs": [
+      "doc_71",
+      "doc_59",
+      "doc_8"
+    ],
+    "concept": "MLflow",
+    "n_relevant": 3
+  },
+  {
+    "id": "eval_17",
+    "query": "What are the best practices for Machine Translation?",
+    "relevant_docs": [
+      "doc_45",
+      "doc_29"
+    ],
+    "concept": "Machine Translation",
+    "n_relevant": 2
+  },
+  {
+    "id": "eval_18",
+    "query": "Can you explain the architecture of Convolutional Neural Networks?",
+    "relevant_docs": [
+      "doc_28",
+      "doc_63"
+    ],
+    "concept": "Convolutional Neural Networks",
+    "n_relevant": 2
+  },
+  {
+    "id": "eval_19",
+    "query": "How is Text Generation used in production systems?",
+    "relevant_docs": [
+      "doc_48"
+    ],
+    "concept": "Text Generation",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_20",
+    "query": "What are the key components of Word Embeddings?",
+    "relevant_docs": [
+      "doc_19",
+      "doc_68"
+    ],
+    "concept": "Word Embeddings",
+    "n_relevant": 2
+  },
+  {
+    "id": "eval_21",
+    "query": "How does Attention Mechanisms integrate with other systems?",
+    "relevant_docs": [
+      "doc_56"
+    ],
+    "concept": "Attention Mechanisms",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_22",
+    "query": "How do I implement Kubeflow?",
+    "relevant_docs": [
+      "doc_26"
+    ],
+    "concept": "Kubeflow",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_23",
+    "query": "What is Model Registry and how does it work?",
+    "relevant_docs": [
+      "doc_75"
+    ],
+    "concept": "Model Registry",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_24",
+    "query": "When should I use Deep Learning?",
+    "relevant_docs": [
+      "doc_12"
+    ],
+    "concept": "Deep Learning",
+    "n_relevant": 1
+  },
+  {
+    "id": "eval_25",
+    "query": "When should I use Reinforcement Learning?",
+    "relevant_docs": [
+      "doc_13",
+      "doc_64"
+    ],
+    "concept": "Reinforcement Learning",
+    "n_relevant": 2
+  }
+]
