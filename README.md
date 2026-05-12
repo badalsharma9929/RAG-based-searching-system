@@ -1,12 +1,12 @@
 # RAG Vector Search Assessment
 
-A local Retrieval-Augmented Generation (RAG) system that simulates Google Cloud Vertex AI behavior using open-source components. This project demonstrates semantic search with vector embeddings using FAISS and sentence-transformers.
+A local Retrieval-Augmented Generation (RAG) system that simulates Google Cloud Vertex AI behavior using open-source components. This project demonstrates semantic search with vector embeddings using FAISS and transformers.
 
 ## Features
 
-- **Local Embeddings**: Uses BGE-M3 (BAAI/bge-m3) - state-of-the-art sentence embeddings
+- **Local Embeddings**: Uses all-MiniLM-L6-v2 - fast, lightweight sentence embeddings
 - **Vector Search**: FAISS-powered fast similarity search
-- **GCP Simulation**: Mocks Vertex AI's `textembedding-gecko` for comparison
+- **GCP Simulation**: Mocks Vertex AI's `textembedding-gecko` using unittest.mock
 - **Benchmark Metrics**: Precision@K, Recall@K, MRR, NDCG@K
 - **Fully Local**: No API keys, no external services needed
 
@@ -16,7 +16,7 @@ A local Retrieval-Augmented Generation (RAG) system that simulates Google Cloud 
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/badalsharma9929/rag-assessment.git
 cd rag-assessment
 
 # Install dependencies
@@ -30,26 +30,33 @@ python main.py
 ```
 
 This will:
-1. Load synthetic documents
-2. Build FAISS index
-3. Run retrieval benchmarks
-4. Generate `output/results.json` and `output/retrieval_benchmark.md`
+1. Load synthetic documents (75 docs)
+2. Build FAISS vector index
+3. Run retrieval with local embeddings
+4. Run retrieval with GCP mock
+5. Generate benchmark comparison
+
+### 3. Output Files
+
+- `output/results.json` - Full metrics in JSON
+- `output/retrieval_benchmark.md` - Markdown comparison table
 
 ## Project Structure
 
 ```
 rag-assessment/
 ├── README.md                 # This file
+├── LICENSE                   # MIT License
 ├── requirements.txt         # Python dependencies
+├── .gitignore               # Git ignore rules
 ├── main.py                  # Entry point
 ├── src/
 │   ├── __init__.py
 │   ├── config.py            # Configuration settings
-│   ├── embeddings.py        # Sentence embedding module
-│   ├── vector_store.py     # FAISS vector store
-│   ├── retrieval.py        # Retrieval logic
-│   ├── gcp_mock.py         # GCP Vertex AI mock
-│   ├── benchmark.py        # Evaluation metrics
+│   ├── embeddings.py        # Embedding module (all-MiniLM-L6-v2 + GCP mock)
+│   ├── vector_store.py      # FAISS vector store
+│   ├── retrieval.py         # Retrieval pipeline
+│   ├── benchmark.py         # Evaluation metrics
 │   ├── data_loader.py      # Data loading utilities
 │   └── generate_data.py    # Synthetic data generator
 ├── tests/
@@ -59,11 +66,11 @@ rag-assessment/
 │   ├── test_retrieval.py
 │   └── test_benchmark.py
 ├── data/
-│   ├── documents.json      # Pre-generated documents
-│   └── eval_pairs.json     # Evaluation query-document pairs
-└── output/                  # Generated output files
-    ├── results.json
-    └── retrieval_benchmark.md
+│   ├── documents.json       # 75 synthetic documents
+│   └── eval_pairs.json      # 25 evaluation query-document pairs
+└── output/
+    ├── results.json         # Benchmark results
+    └── retrieval_benchmark.md # Markdown table
 ```
 
 ## How It Works
@@ -72,53 +79,50 @@ rag-assessment/
 ```python
 from src.embeddings import EmbeddingModel
 
-model = EmbeddingModel()
+model = EmbeddingModel()  # Uses all-MiniLM-L6-v2
 embeddings = model.encode(["Your text here"])
+# Output: (1, 384) numpy array
 ```
 
 ### 2. Vector Storage
 ```python
 from src.vector_store import VectorStore
 
-store = VectorStore(dimension=1024)
+store = VectorStore(dimension=384)
 store.add_documents(texts, embeddings)
 results = store.search(query_embedding, top_k=5)
 ```
 
-### 3. Benchmarking
+### 3. GCP Mocking
+```python
+from src.embeddings import GCPEmbeddingMock
+
+gcp_mock = GCPEmbeddingMock()
+# Uses unittest.mock pattern - no actual GCP calls
+embeddings = gcp_mock.get_embeddings("text")
+```
+
+### 4. Benchmarking
 ```python
 from src.benchmark import Benchmark
 
 bench = Benchmark()
-metrics = bench.evaluate(retrieved, ground_truth)
+metrics = bench.evaluate(retrieved_results, ground_truth)
+# Outputs: Precision@K, Recall@K, MRR, NDCG@K
 ```
 
-## Output Example
+## Example Output
 
-The benchmark generates:
-
-### JSON Output (`output/results.json`)
-```json
-{
-  "local_model": "BAAI/bge-m3",
-  "gcp_model": "textembedding-gecko (mocked)",
-  "metrics": {
-    "precision_at_5": {"local": 0.85, "gcp": 0.82},
-    "recall_at_5": {"local": 0.78, "gcp": 0.75},
-    "mrr": {"local": 0.88, "gcp": 0.85},
-    "ndcg_at_5": {"local": 0.86, "gcp": 0.83}
-  }
-}
+```
+| Metric       |   Local |   GCP (Mock) |   Difference |
+|--------------|---------|--------------|--------------|
+| Precision 5  |    0.28 |        0.016 |        0.264 |
+| Recall 5     |       1 |         0.06 |         0.94 |
+| Mrr          |    0.85 |        0.036 |        0.818 |
+| Ndcg 5       |    0.90 |        0.036 |        0.860 |
 ```
 
-### Markdown Table (`output/retrieval_benchmark.md`)
-
-| Metric | Local (BGE-M3) | GCP (Mocked) |
-|--------|----------------|---------------|
-| Precision@5 | 0.85 | 0.82 |
-| Recall@5 | 0.78 | 0.75 |
-| MRR | 0.88 | 0.85 |
-| NDCG@5 | 0.86 | 0.83 |
+The local model significantly outperforms the GCP mock because it uses real semantic embeddings.
 
 ## Running Tests
 
@@ -138,21 +142,33 @@ pytest --cov=src
 Edit `src/config.py` to customize:
 
 ```python
-# Embedding model
-EMBEDDING_MODEL = "BAAI/bge-m3"
+# Embedding model (all-MiniLM-L6-v2)
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_DEVICE = "cpu"
 
 # Vector store settings
-VECTOR_DIMENSION = 1024
+VECTOR_DIMENSION = 384
 TOP_K = 5
 
 # Output settings
 OUTPUT_DIR = "output"
 ```
 
+## Technology Stack
+
+| Component | Technology |
+|-----------|------------|
+| Language | Python 3.9+ |
+| Embeddings | all-MiniLM-L6-v2 (transformers) |
+| Vector Store | FAISS (faiss-cpu) |
+| GCP Mock | unittest.mock |
+| Testing | pytest |
+| Output | json, markdown, tabulate |
+
 ## Requirements
 
 - Python 3.9+
-- 4GB+ RAM (for embedding model)
+- 4GB+ RAM
 - ~500MB disk space (for model downloads)
 
 ## License
@@ -161,6 +177,6 @@ MIT License - feel free to use for learning and development.
 
 ## Acknowledgments
 
-- [BAAI](https://github.com/FlagOpen/FlagEmbedding) for BGE-M3
+- [Sentence-Transformers](https://sbert.net/) for the model architecture
 - [FAISS](https://github.com/facebookresearch/faiss) by Meta
-- [Sentence-Transformers](https://sbert.net/) by UKP-TUDA
+- [Hugging Face Transformers](https://huggingface.co/transformers)
