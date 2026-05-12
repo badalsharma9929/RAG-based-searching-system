@@ -13,3 +13,7 @@ pytest-cov>=4.0.0
 
 # Google Cloud (for mocking - not actually used)
 vertexai>=1.40.0
+
+# Web UI
+streamlit>=1.30.0
+pandas>=2.0.0
