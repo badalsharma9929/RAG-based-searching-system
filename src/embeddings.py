@@ -49,7 +49,7 @@ class EmbeddingModel:
         """Lazy-load the model on first access."""
         if self._model is None:
             print(f"Loading embedding model: {self.model_name}...")
-            self._model = AutoModel.from_pretrained(self.model_name).to(self.device)
+            self._model = AutoModel.from_pretrained(self.model_name, token=False).to(self.device)
             self._model.eval()
             print(f"Model loaded successfully!")
         return self._model
@@ -58,7 +58,7 @@ class EmbeddingModel:
     def tokenizer(self):
         """Lazy-load the tokenizer."""
         if self._tokenizer is None:
-            self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+            self._tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=False)
         return self._tokenizer
 
     @property
