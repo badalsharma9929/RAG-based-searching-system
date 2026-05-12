@@ -1,0 +1,23 @@
+Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+Traceback (most recent call last):
+  File "C:\rag-assessment\main.py", line 273, in <module>
+    main()
+    ~~~~^^
+  File "C:\rag-assessment\main.py", line 262, in main
+    gcp_results = run_gcp_retrieval(gcp_retriever, eval_pairs)
+  File "C:\rag-assessment\main.py", line 163, in run_gcp_retrieval
+    results = gcp_retriever.retrieve_batch(queries, top_k=10)
+  File "C:\rag-assessment\src\retrieval.py", line 191, in retrieve_batch
+    query_results = self.retrieve(query, top_k=k)
+  File "C:\rag-assessment\src\retrieval.py", line 165, in retrieve
+    query_embedding = np.array(self.gcp_mock.get_embeddings(query))
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\rag-assessment\src\embeddings.py", line 203, in get_embeddings
+    emb = self._generate_mock_embedding(text)
+  File "C:\rag-assessment\src\embeddings.py", line 181, in _generate_mock_embedding
+    embedding = rng.randn(self.dimension).astype(np.float32)
+                ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "numpy/random/mtrand.pyx", line 1306, in numpy.random.mtrand.RandomState.randn
+  File "numpy/random/mtrand.pyx", line 1467, in numpy.random.mtrand.RandomState.standard_normal
+  File "numpy/random/_common.pyx", line 657, in numpy.random._common.cont
+TypeError: 'str' object cannot be interpreted as an integer

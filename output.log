@@ -1,0 +1,53 @@
+
+============================================================
+ RAG Vector Search Assessment
+============================================================
+Output directory ready: output
+Loaded 75 documents from documents.json
+Loaded 25 evaluation pairs from eval_pairs.json
+Loaded existing data files.
+
+==================================================
+Building Vector Index
+==================================================
+
+Encoding 75 documents...
+Loading embedding model: sentence-transformers/all-MiniLM-L6-v2...
+Model loaded successfully!
+Processed 8/75 texts
+Processed 16/75 texts
+Processed 24/75 texts
+Processed 32/75 texts
+Processed 40/75 texts
+Processed 48/75 texts
+Processed 56/75 texts
+Processed 64/75 texts
+Processed 72/75 texts
+Processed 75/75 texts
+Embeddings shape: (75, 384)
+
+Adding documents to vector store...
+Added 75 documents to vector store.
+Total documents in index: 75
+
+Vector Store Stats:
+  - Documents: 75
+  - Dimension: 384
+  - Index Type: flat
+
+==================================================
+Running Local Retrieval (BGE-M3)
+==================================================
+Retrieving for 25 queries...
+Loading embedding model: sentence-transformers/all-MiniLM-L6-v2...
+Model loaded successfully!
+
+Sample Results (first query):
+  1. doc_14 (score: 0.5102)
+  2. doc_9 (score: 0.5102)
+  3. doc_68 (score: 0.2103)
+
+==================================================
+Running GCP Mock Retrieval (textembedding-gecko)
+==================================================
+Retrieving for 25 queries...

@@ -1,33 +1,33 @@
 """
-Embedding module using sentence-transformers with BGE-M3 model.
+Embedding module using transformers with all-MiniLM-L6-v2 model.
 
-BGE-M3 is a state-of-the-art embedding model that supports:
-- Dense retrieval
-- Sparse retrieval (BM25-like)
-- ColBERT-style late interaction
-
-This implementation uses the dense embedding mode.
+This implementation uses the HuggingFace transformers library directly
+to avoid dependency issues with sentence-transformers.
 """
+
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 import numpy as np
 from typing import List, Union
-from sentence_transformers import SentenceTransformer
+import torch
+from transformers import AutoTokenizer, AutoModel
 
 from . import config
 
 
 class EmbeddingModel:
     """
-    Wrapper around sentence-transformers for generating embeddings.
+    Wrapper around transformers for generating embeddings.
 
-    Uses BAAI/bge-m3 model which achieves top MTEB scores among
-    open-source embedding models.
+    Uses all-MiniLM-L6-v2 model - a fast, lightweight sentence embedding model.
     """
 
     def __init__(
         self,
         model_name: str = config.EMBEDDING_MODEL,
-        device: str = config.EMBEDDING_DEVICE,
+        device: str = "cpu",
         normalize: bool = True
     ):
         """
@@ -42,25 +42,40 @@ class EmbeddingModel:
         self.device = device
         self.normalize = normalize
         self._model = None
+        self._tokenizer = None
 
     @property
-    def model(self) -> SentenceTransformer:
+    def model(self):
         """Lazy-load the model on first access."""
         if self._model is None:
             print(f"Loading embedding model: {self.model_name}...")
-            self._model = SentenceTransformer(self.model_name, device=self.device)
+            self._model = AutoModel.from_pretrained(self.model_name).to(self.device)
+            self._model.eval()
             print(f"Model loaded successfully!")
         return self._model
+
+    @property
+    def tokenizer(self):
+        """Lazy-load the tokenizer."""
+        if self._tokenizer is None:
+            self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        return self._tokenizer
 
     @property
     def dimension(self) -> int:
         """Return the embedding dimension."""
         return config.VECTOR_DIMENSION
 
+    def _mean_pooling(self, model_output, attention_mask):
+        """Mean pooling over token embeddings."""
+        token_embeddings = model_output.last_hidden_state
+        input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+
     def encode(
         self,
         texts: Union[str, List[str]],
-        batch_size: int = 32,
+        batch_size: int = 8,
         show_progress: bool = False
     ) -> np.ndarray:
         """
@@ -74,43 +89,37 @@ class EmbeddingModel:
         Returns:
             numpy array of embeddings with shape (n_texts, dimension)
         """
-        # Handle single string input
         if isinstance(texts, str):
             texts = [texts]
 
-        # Encode with sentence-transformers
-        embeddings = self.model.encode(
-            texts,
-            batch_size=batch_size,
-            show_progress_bar=show_progress,
-            normalize_embeddings=self.normalize,
-            convert_to_numpy=True
-        )
+        all_embeddings = []
 
-        return embeddings
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i:i+batch_size]
+
+            encoded = self.tokenizer(batch, padding=True, truncation=True, max_length=256, return_tensors='pt')
+            encoded = {k: v.to(self.device) for k, v in encoded.items()}
+
+            with torch.no_grad():
+                output = self.model(**encoded)
+                embeddings = self._mean_pooling(output, encoded['attention_mask'])
+
+            if self.normalize:
+                embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1)
+
+            all_embeddings.append(embeddings.cpu().numpy())
+
+            if show_progress:
+                print(f"Processed {min(i+batch_size, len(texts))}/{len(texts)} texts")
+
+        return np.vstack(all_embeddings)
 
     def encode_queries(self, queries: List[str]) -> np.ndarray:
-        """
-        Encode search queries.
-
-        Args:
-            queries: List of query strings
-
-        Returns:
-            numpy array of query embeddings
-        """
+        """Encode search queries."""
         return self.encode(queries, show_progress=True)
 
     def encode_documents(self, documents: List[str]) -> np.ndarray:
-        """
-        Encode document chunks.
-
-        Args:
-            documents: List of document strings
-
-        Returns:
-            numpy array of document embeddings
-        """
+        """Encode document chunks."""
         return self.encode(documents, show_progress=True)
 
     def compute_similarity(
@@ -118,18 +127,7 @@ class EmbeddingModel:
         query_embeddings: np.ndarray,
         doc_embeddings: np.ndarray
     ) -> np.ndarray:
-        """
-        Compute cosine similarity between queries and documents.
-
-        Since embeddings are normalized, dot product equals cosine similarity.
-
-        Args:
-            query_embeddings: Query vectors (n_queries, dim)
-            doc_embeddings: Document vectors (n_docs, dim)
-
-        Returns:
-            Similarity matrix (n_queries, n_docs)
-        """
+        """Compute cosine similarity between queries and documents."""
         return np.dot(query_embeddings, doc_embeddings.T)
 
     def get_model_info(self) -> dict:
@@ -161,7 +159,7 @@ class GCPEmbeddingMock:
             model_name: Name of the mocked GCP model
         """
         self.model_name = model_name
-        self.dimension = config.GCP_EMBEDDING_MODEL_NAME
+        self.dimension = config.GCP_EMBEDDING_DIMENSION
 
     def _generate_mock_embedding(self, text: str) -> np.ndarray:
         """

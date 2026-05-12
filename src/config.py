@@ -3,11 +3,11 @@ Configuration settings for the RAG Vector Search project.
 """
 
 # Embedding Model Settings
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 EMBEDDING_DEVICE = "cpu"  # Use "cuda" if GPU available
 
 # Vector Store Settings
-VECTOR_DIMENSION = 1024  # BGE-M3 outputs 1024-dim embeddings
+VECTOR_DIMENSION = 384  # all-MiniLM-L6-v2 outputs 384-dim embeddings
 TOP_K = 5  # Number of results to retrieve
 INDEX_TYPE = "flat"  # FAISS index type (flat, ivf, hnsw)
 
@@ -23,7 +23,7 @@ BENCHMARK_FILE = "retrieval_benchmark.md"
 
 # GCP Mock Settings
 GCP_EMBEDDING_MODEL_NAME = "textembedding-gecko"
-GCP_EMBEDDING_DIMENSION = 768  # Gecko outputs 768-dim
+GCP_EMBEDDING_DIMENSION = 384  # Match local model dimension
 
 # Benchmark Settings
 BENCHMARK_TOP_K = [1, 3, 5, 10]
